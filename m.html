@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f8f2ed" />
+    <title>A little note for you</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        --ink: #413633;
+        --muted: #8d7b75;
+        --rose: #bd7771;
+        --paper: #fffdfa;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        color: var(--ink);
+        background:
+          radial-gradient(ellipse at 12% 18%, #fffaf5 0, transparent 38%),
+          radial-gradient(ellipse at 89% 78%, #f5e4df 0, transparent 36%),
+          #f8f2ed;
+      }
+
+      button {
+        font: inherit;
+      }
+
+      .page {
+        display: grid;
+        min-height: 100svh;
+        place-items: center;
+        padding: 48px 22px 36px;
+        overflow: hidden;
+      }
+
+      .note {
+        width: min(100%, 560px);
+        text-align: center;
+      }
+
+      .eyebrow {
+        margin: 0 0 15px;
+        color: var(--rose);
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2.35rem, 9vw, 3.65rem);
+        font-weight: 400;
+        letter-spacing: -0.055em;
+        line-height: 1.08;
+      }
+
+      .intro {
+        margin: 14px 0 0;
+        color: var(--muted);
+        font-size: 0.96rem;
+        line-height: 1.7;
+      }
+
+      .scene {
+        position: relative;
+        display: grid;
+        min-height: 330px;
+        margin: 8px auto 0;
+        place-items: center;
+        perspective: 1100px;
+      }
+
+      .envelope-button {
+        position: relative;
+        z-index: 2;
+        width: min(82vw, 340px);
+        aspect-ratio: 1.48;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .envelope-button:focus-visible {
+        outline: 3px solid #bd7771;
+        outline-offset: 9px;
+        border-radius: 8px;
+      }
+
+      .envelope {
+        position: absolute;
+        inset: 0;
+        filter: drop-shadow(0 19px 18px rgb(102 74 68 / 13%));
+        transition: transform 450ms cubic-bezier(0.2, 0.8, 0.2, 1);
+        transform-style: preserve-3d;
+      }
+
+      .envelope-button:hover .envelope,
+      .envelope-button:focus-visible .envelope {
+        transform: translateY(-5px);
+      }
+
+      .envelope-back {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        border-radius: 8px;
+        background: #e8c9bc;
+      }
+
+      .envelope-back::before,
+      .envelope-back::after {
+        position: absolute;
+        bottom: 0;
+        width: 0;
+        height: 0;
+        content: "";
+      }
+
+      .envelope-back::before {
+        left: 0;
+        border-right: 50% solid transparent;
+        border-bottom: 100% solid #ddb5a8;
+      }
+
+      .envelope-back::after {
+        right: 0;
+        border-bottom: 100% solid #e4c0b3;
+        border-left: 50% solid transparent;
+      }
+
+      .envelope-pocket {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        overflow: hidden;
+        border-radius: 8px;
+        clip-path: polygon(0 0, 50% 57%, 100% 0, 100% 100%, 0 100%);
+        background: linear-gradient(145deg, #efd4c8 2%, #e8c6b8 100%);
+      }
+
+      .envelope-pocket::before,
+      .envelope-pocket::after {
+        position: absolute;
+        top: 0;
+        width: 0;
+        height: 0;
+        content: "";
+      }
+
+      .envelope-pocket::before {
+        left: 0;
+        border-top: 170px solid #f1d9ce;
+        border-right: 50% solid transparent;
+      }
+
+      .envelope-pocket::after {
+        right: 0;
+        border-top: 170px solid #e7c2b5;
+        border-left: 50% solid transparent;
+      }
+
+      .flap {
+        position: absolute;
+        z-index: 4;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 58%;
+        clip-path: polygon(0 0, 100% 0, 50% 100%);
+        background: linear-gradient(160deg, #f3ddd2, #e5c1b4);
+        transform: rotateX(0);
+        transform-origin: top;
+        transition: transform 650ms cubic-bezier(0.25, 0.75, 0.25, 1);
+        backface-visibility: hidden;
+      }
+
+      .seal {
+        position: absolute;
+        z-index: 5;
+        top: 43%;
+        left: 50%;
+        display: grid;
+        width: 45px;
+        aspect-ratio: 1;
+        place-items: center;
+        border: 1px solid rgb(255 255 255 / 46%);
+        border-radius: 50%;
+        background: #bd7771;
+        color: #fff6f1;
+        font-size: 1.15rem;
+        box-shadow: 0 4px 10px rgb(119 67 62 / 19%);
+        transform: translate(-50%, -50%);
+        transition: opacity 200ms ease, transform 250ms ease;
+      }
+
+      .letter {
+        position: absolute;
+        z-index: 1;
+        top: 50%;
+        left: 50%;
+        display: flex;
+        width: 88%;
+        min-height: 232px;
+        padding: 25px 22px 20px;
+        flex-direction: column;
+        align-items: flex-start;
+        border: 1px solid #f0e9df;
+        border-radius: 4px;
+        background:
+          linear-gradient(90deg, transparent 0 29px, rgb(209 156 144 / 17%) 30px, transparent 31px),
+          repeating-linear-gradient(to bottom, var(--paper) 0 29px, #f1e7de 30px, var(--paper) 31px);
+        box-shadow: 0 9px 22px rgb(90 65 58 / 13%);
+        text-align: left;
+        opacity: 0;
+        transform: translate(-50%, 6%) scale(0.94);
+        transition:
+          transform 750ms cubic-bezier(0.18, 0.8, 0.25, 1) 180ms,
+          opacity 220ms ease 100ms;
+      }
+
+      .letter-to {
+        margin: 0 0 12px;
+        color: var(--rose);
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.12rem;
+        font-style: italic;
+      }
+
+      .letter-message {
+        margin: 0;
+        color: #574844;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(0.94rem, 4vw, 1.08rem);
+        line-height: 1.75;
+      }
+
+      .letter-signoff {
+        align-self: flex-end;
+        margin: auto 0 0;
+        padding-top: 12px;
+        color: var(--rose);
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1rem;
+        font-style: italic;
+      }
+
+      .is-open .letter {
+        z-index: 5;
+        opacity: 1;
+        transform: translate(-50%, -86%) scale(1);
+        transition-delay: 240ms;
+      }
+
+      .is-open .flap {
+        z-index: 0;
+        transform: rotateX(180deg);
+      }
+
+      .is-open .seal {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.6);
+      }
+
+      .is-open .envelope-button:hover .envelope,
+      .is-open .envelope-button:focus-visible .envelope {
+        transform: none;
+      }
+
+      .hint {
+        position: relative;
+        z-index: 6;
+        min-height: 24px;
+        margin: 1px 0 0;
+        color: var(--muted);
+        font-size: 0.85rem;
+        letter-spacing: 0.025em;
+        transition: opacity 250ms ease;
+      }
+
+      .hint-heart {
+        display: inline-block;
+        margin: 0 4px;
+        color: var(--rose);
+        animation: heartbeat 1.8s ease-in-out infinite;
+      }
+
+      .is-open + .hint {
+        opacity: 0.65;
+      }
+
+      .footer {
+        margin: 34px 0 0;
+        color: #a3918a;
+        font-size: 0.72rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      @keyframes heartbeat {
+        0%, 100% { transform: scale(1); }
+        12% { transform: scale(1.2); }
+        24% { transform: scale(1); }
+        36% { transform: scale(1.13); }
+      }
+
+      @media (max-width: 420px) {
+        .page {
+          padding-inline: 18px;
+        }
+
+        .scene {
+          min-height: 295px;
+          margin-top: 14px;
+        }
+
+        .letter {
+          min-height: 220px;
+          padding: 22px 17px 18px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          scroll-behavior: auto !important;
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+    <script>
+      const h = React.createElement;
+
+      function LoveNote() {
+        const [isOpen, setIsOpen] = React.useState(false);
+
+        function toggleEnvelope() {
+          setIsOpen((open) => !open);
+        }
+
+        return h(
+          "main",
+          { className: "page" },
+          h(
+            "section",
+            { className: "note", "aria-labelledby": "page-title" },
+            h("p", { className: "eyebrow" }, "A little something, just for you"),
+            h("h1", { id: "page-title" }, "You make life sweeter"),
+            h("p", { className: "intro" }, "I hope now you will share your crispy and spicy movie experience with me!"),
+            h(
+              "div",
+              { className: `scene${isOpen ? " is-open" : ""}` },
+              h(
+                "button",
+                {
+                  className: "envelope-button",
+                  type: "button",
+                  onClick: toggleEnvelope,
+                  "aria-expanded": isOpen,
+                  "aria-label": isOpen ? "Close the letter" : "Open the letter",
+                },
+                h(
+                  "span",
+                  { className: "envelope", "aria-hidden": "true" },
+                  h("span", { className: "envelope-back" }),
+                  h(
+                    "span",
+                    { className: "letter" },
+                    h("span", { className: "letter-to" }, "Dear Mimi,"),
+                    h(
+                      "span",
+                      { className: "letter-message" },
+                      "You know Mi, I am a bit silly that I just resisted you from sharing your thoughts instead of doing both, listening to your experience and finishing my assignments. A small letter from my end, Mi! I hope you are alright and just keep in mind that I am always here to listen to you and support you. I hope you will share your crispy and spicy movie experience with me!"
+                    ),
+                    h("span", { className: "letter-signoff" }, "From Subha")
+                  ),
+                  h("span", { className: "envelope-pocket" }),
+                  h("span", { className: "flap" }),
+                  h("span", { className: "seal" }, "♥")
+                )
+              )
+            ),
+            h(
+              "p",
+              { className: "hint", "aria-live": "polite" },
+              isOpen
+                ? "Tap the envelope to tuck the note away"
+                : h("span", null, "Tap the envelope to open it ", h("span", { className: "hint-heart", "aria-hidden": "true" }, "♡"))
+            ),
+            h("p", { className: "footer" }, "A note from the heart")
+          )
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById("root")).render(h(LoveNote));
+    </script>
+  </body>
+</html>

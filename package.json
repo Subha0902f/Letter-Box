@@ -1,0 +1,15 @@
+{
+  "name": "subha",
+  "version": "1.0.0",
+  "description": "I am making this website for someone special",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Subhadeep",
+  "license": "ISC",
+  "dependencies": {
+    "node": "^27.0.0-alpha.0.1.1",
+    "react": "^19.3.1"
+  }
+}
